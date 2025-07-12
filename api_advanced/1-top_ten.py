@@ -1,22 +1,23 @@
 #!/usr/bin/python3
-""" Get the titles of the first 10 hot posts for a given subreddit."""
+"""get hot post function"""
+
+
+import json
 import requests
+import sys
 
 
 def top_ten(subreddit):
-
-    headers = {'User-Agent': 'MyAPI/0.0.1'}
-    subreddit_url = "https://reddit.com/r/{}.json".format(subreddit)
-    response = requests.get(subreddit_url, headers=headers)
-
-    if response.status_code == 200:
-        json_data = response.json()
-        for i in range(10):
-            print(
-                json_data.get('data')
-                .get('children')[i]
-                .get('data')
-                .get('title')
-            )
+    """get top ten hot post"""
+    if len(sys.argv) < 2:
+        return print(None)
     else:
-        print(None)
+        url = "https://www.reddit.com/r/{}/hot.json?limit=10".format(subreddit)
+        headers = {"User-Agent": "Mozilla/5.0"}
+        result = requests.get(url, headers=headers, allow_redirects=False)
+        listing = []
+        if result.status_code != 200:
+            return print(None)
+        body = json.loads(result.text)
+        for i in body["data"]["children"]:
+            print(i["data"]["title"])
